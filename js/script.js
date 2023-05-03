@@ -69,7 +69,50 @@ const  updateTitle = (text) => {
     })
 }
 
+// Function Pesquisar Tarefa
+const getSearchTarefas = (text) => {
 
+    const tarefas = document.querySelectorAll(".todo")
+
+    tarefas.forEach((tarefa) => {
+
+        let titleTarefa = tarefa.querySelector("h3").innerText.toLowerCase();
+        const normalizeText = text.toLowerCase();
+
+        tarefa.style.display = "flex"
+
+        if(!titleTarefa.includes(normalizeText)){
+            tarefa.style.display = "none"
+        }
+    })
+}
+
+//Function Filtrar Tarefas
+const filtrarTarefas = (filterText) => {
+
+    const tarefas = document.querySelectorAll(".todo")
+
+    switch(filterText){
+        case "all":
+            tarefas.forEach((tarefa) => tarefa.style.display = "flex")
+            break;
+        case "done":
+            tarefas.forEach((tarefa) =>
+                tarefa.classList.contains("done")
+                    ?(tarefa.style.display = "flex")
+                    :(tarefa.style.display = "none"))
+            break;
+        case "todo":
+            tarefas.forEach((tarefa) =>
+                !tarefa.classList.contains("done")
+                    ?(tarefa.style.display = "flex")
+                    :(tarefa.style.display = "none"))
+            break;
+
+        default:
+            break;
+    }
+}
 
 
 //Eventos
@@ -159,6 +202,30 @@ btnEdit.addEventListener("click", (evento) => {
     }
 
     toggleForms();
+})
+
+//Pesquisar Tarefa
+searchInput.addEventListener("keyup", (evento) => {
+    const search = evento.target.value
+
+    getSearchTarefas(search);
+})
+
+//Limpar pesquisa
+eraseBtn.addEventListener("click", (evt) => {
+    evt.preventDefault();
+
+    searchInput.value = "";
+
+    searchInput.dispatchEvent(new Event("keyup"));
+})
+
+//Filtrar tarefas
+filterBtn.addEventListener("change", (evento) => {
+    
+    const filterValue = evento.target.value
+
+    filtrarTarefas(filterValue);
 })
 
 
