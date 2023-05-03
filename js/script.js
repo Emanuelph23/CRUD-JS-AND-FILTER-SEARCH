@@ -1,7 +1,7 @@
 //Seleção de elementos
 const formAdd = document.querySelector("#form-add");
 const inputAdd = document.querySelector("#text-input");
-const todoList = document.querySelector("#todo-list");
+const tarefaList = document.querySelector("#tarefa-list");
 const editForm = document.querySelector("#edit-form");
 const editInput = document.querySelector("#edit-input");
 const cancelBtn = document.querySelector("#cancel-edit-btn");
@@ -15,32 +15,41 @@ let oldTitleInput;
 
 //Funções
 
-//Function Crianr tarefas
-const saveTarefa = (text) => {
+//Function Imprimindo tarefas
+const saveTarefa = (text, done = 0, save = 1) => {
 
-    const todo = document.createElement("div")
-    todo.classList.add("todo")
+    const tarefa = document.createElement("div")
+    tarefa.classList.add("tarefa")
 
     const title = document.createElement("h3")
     title.innerText = text
-    todo.appendChild(title)
+    tarefa.appendChild(title)
 
     const btnConcluido = document.createElement("button")
-    btnConcluido.classList.add("finish-todo")
+    btnConcluido.classList.add("finish-tarefa")
     btnConcluido.innerHTML = '<i class="fa-solid fa-check-circle"></i>'
-    todo.appendChild(btnConcluido)
+    tarefa.appendChild(btnConcluido)
 
     const btnEdit = document.createElement("button")
-    btnEdit.classList.add("edit-todo")
+    btnEdit.classList.add("edit-tarefa")
     btnEdit.innerHTML = '<i class="fa-solid fa-pen"></i>'
-    todo.appendChild(btnEdit)
+    tarefa.appendChild(btnEdit)
 
     const btnRemove = document.createElement("button")
-    btnRemove.classList.add("remove-todo")
+    btnRemove.classList.add("remove-tarefa")
     btnRemove.innerHTML = '<i class="fa-solid fa-xmark-circle">'
-    todo.appendChild(btnRemove)
+    tarefa.appendChild(btnRemove)
 
-    todoList.appendChild(todo);
+    //Utilizando dados da LocalStorage
+    if(done){
+        tarefa.classList.add("done")
+    }
+
+    if(save){
+        saveTarefasLocalStorage({titulo:text, done})
+    }
+
+    tarefaList.appendChild(tarefa);
 };
 
 //Function Limpando o campo de texto
@@ -53,18 +62,20 @@ function clear(){
 const toggleForms = () => {
     editForm.classList.toggle("hide")
     formAdd.classList.toggle("hide")
-    todoList.classList.toggle("hide")
+    tarefaList.classList.toggle("hide")
 }
 
-//Function Atualizando título da tarefa
-const  updateTitle = (text) => {
-    const tarefas = document.querySelectorAll(".todo")
+//Function Atualizar Tarefa
+const  updateTarefa = (text) => {
+    const tarefas = document.querySelectorAll(".tarefa")
 
     tarefas.forEach((tarefa) => {
         let titleTarefa = tarefa.querySelector("h3")
 
         if(titleTarefa.innerText === oldTitleInput){
             titleTarefa.innerText = text;
+
+            updateTarefaLocalStorage(oldTitleInput,text);
         }
     })
 }
@@ -72,7 +83,7 @@ const  updateTitle = (text) => {
 // Function Pesquisar Tarefa
 const getSearchTarefas = (text) => {
 
-    const tarefas = document.querySelectorAll(".todo")
+    const tarefas = document.querySelectorAll(".tarefa")
 
     tarefas.forEach((tarefa) => {
 
@@ -90,7 +101,7 @@ const getSearchTarefas = (text) => {
 //Function Filtrar Tarefas
 const filtrarTarefas = (filterText) => {
 
-    const tarefas = document.querySelectorAll(".todo")
+    const tarefas = document.querySelectorAll(".tarefa")
 
     switch(filterText){
         case "all":
@@ -102,7 +113,7 @@ const filtrarTarefas = (filterText) => {
                     ?(tarefa.style.display = "flex")
                     :(tarefa.style.display = "none"))
             break;
-        case "todo":
+        case "realize":
             tarefas.forEach((tarefa) =>
                 !tarefa.classList.contains("done")
                     ?(tarefa.style.display = "flex")
@@ -157,28 +168,32 @@ document.addEventListener("click", (evento) => {
     }
     
 
-    if(targetElement.classList.contains("finish-todo")){
+    if(targetElement.classList.contains("finish-tarefa")){
 
         parentElement.classList.toggle("done");
-        const btnEdit = parentElement.querySelector(".edit-todo")
+        const btnEdit = parentElement.querySelector(".edit-tarefa")
 
         if(parentElement.classList.contains("done")){
             btnEdit.style.display = "none"
         }else{
             btnEdit.style.display = "block"
         }
+
+        updateStatusLocalStorage(titleInput);
         
     }
 
-    if(targetElement.classList.contains("edit-todo")){
+    if(targetElement.classList.contains("edit-tarefa")){
         toggleForms();
 
         editInput.value = titleInput
         oldTitleInput = titleInput
     }
 
-    if(targetElement.classList.contains("remove-todo")){
+    if(targetElement.classList.contains("remove-tarefa")){
         parentElement.remove();
+
+        removeTarefaLocalStorage(titleInput);
     }
     
 })
@@ -198,7 +213,7 @@ btnEdit.addEventListener("click", (evento) => {
     const editedInputTitle = editInput.value
 
     if(editedInputTitle){
-        updateTitle(editedInputTitle)
+        updateTarefa(editedInputTitle)
     }
 
     toggleForms();
@@ -228,4 +243,58 @@ filterBtn.addEventListener("change", (evento) => {
     filtrarTarefas(filterValue);
 })
 
+//Salvar dados no Local Storage
+const getTarefasLocalStorage = () =>{
+    const tarefas = JSON.parse(localStorage.getItem("tarefas")) || [];
+
+    return tarefas;
+}
+
+
+const saveTarefasLocalStorage = (tarefa) =>{
+    const tarefas = getTarefasLocalStorage()
+
+    tarefas.push(tarefa)
+
+    localStorage.setItem("tarefas", JSON.stringify(tarefas));
+}
+
+//Imprimindo dados do Local Storage na tabela de tarefas
+
+const printTarefas = () => {
+    const tarefas = getTarefasLocalStorage()
+
+    tarefas.forEach((tarefa) => {
+        saveTarefa(tarefa.titulo, tarefa.done, 0);
+    })
+}
+
+//Remover tarefas do Local Storage
+const removeTarefaLocalStorage = (tituloTarefa) => {
+    const tarefas = getTarefasLocalStorage()
+
+    const filterTarefas = tarefas.filter((tarefa) => tarefa.titulo !== tituloTarefa)
+
+    localStorage.setItem("tarefas", JSON.stringify(filterTarefas));
+}
+
+//Atualizar tarefas Local Storage
+const updateStatusLocalStorage = (tituloTarefa) => {
+    const tarefas = getTarefasLocalStorage()
+
+    tarefas.map((tarefa) => tarefa.titulo === tituloTarefa ? tarefa.done = !tarefa.done : null)
+
+    localStorage.setItem("tarefas", JSON.stringify(tarefas));
+}
+
+//Atualizar tarefas Local Storage
+const updateTarefaLocalStorage = (oldtituloTarefa, newTituloTarefa) => {
+    const tarefas = getTarefasLocalStorage()
+
+    tarefas.map((tarefa) => tarefa.titulo === oldtituloTarefa ? (tarefa.titulo = newTituloTarefa) : null)
+
+    localStorage.setItem("tarefas", JSON.stringify(tarefas));
+}
+
+printTarefas();
 

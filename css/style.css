@@ -148,12 +148,12 @@ button i{
     padding: 10px 5px;
 }
 
-/*Todo-List*/
-#todo-list{
+/*tarefa-List*/
+#tarefa-list{
     border-top: 1px solid #dfdfdf;
 }
 
-.todo{
+.tarefa{
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -162,14 +162,14 @@ button i{
     transition: 0.3s;
 }
 
-.todo h3{
+.tarefa h3{
     flex: 1;
     font-size: 0.9rem;
 }
 
-.finish-todo,
-.edit-todo,
-.remove-todo{
+.finish-tarefa,
+.edit-tarefa,
+.remove-tarefa{
     width: 38px;
     height: 36.5px;
     font-size: 16px;
@@ -182,9 +182,9 @@ button i{
     transition: 0.3s;
 }
 
-.finish-todo:hover,
-.edit-todo:hover,
-.remove-todo:hover{
+.finish-tarefa:hover,
+.edit-tarefa:hover,
+.remove-tarefa:hover{
    opacity: 1;
 }
 
