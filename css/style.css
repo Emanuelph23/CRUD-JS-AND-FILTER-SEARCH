@@ -12,12 +12,32 @@ body{
 
 /*Header*/
 header{
+    display: flex;
+    justify-content: center;
+    gap: 30px;
     height: 160px;
     padding: 30px;
     background-color: #673ab7;
     color: #fff;
     text-align: center;
     font-size: 2rem;
+}
+
+#export-tarefas{
+    margin-top: 3px;
+    height: 35px;
+    padding: 10px;
+    background-color: #baa0e4;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    transition: 0.2s;
+}
+
+#export-tarefas:hover{
+    transform: scale(1.05);
 }
 
 /*Form*/

@@ -4,12 +4,15 @@ const inputAdd = document.querySelector("#text-input");
 const tarefaList = document.querySelector("#tarefa-list");
 const editForm = document.querySelector("#edit-form");
 const editInput = document.querySelector("#edit-input");
+
 const cancelBtn = document.querySelector("#cancel-edit-btn");
 const btnEdit = document.querySelector("#btnEdit");
 const searchInput = document.querySelector("#search-input");
 const eraseBtn = document.querySelector("#erase-button");
 const filterBtn = document.querySelector("#filter-select");
 const alertInput = document.querySelector(".alert-input");
+
+const btnExportCsv = document.querySelector("#export-tarefas")
 
 let oldTitleInput;
 
@@ -123,6 +126,27 @@ const filtrarTarefas = (filterText) => {
         default:
             break;
     }
+}
+
+//Function Exportar Tarefas em csv
+function exportTarefa(){
+    const tarefas = getTarefasLocalStorage();
+
+    const csvString =[
+        ["Titulo","Done"],
+        ...tarefas.map((tarefa) => [tarefa.titulo, tarefa.done]),
+    ].map((element) => element.join(",")).join("\n");
+
+    const element = document.createElement("a");
+
+    element.href = "data:text/csv;charset=utf-8," + encodeURI(csvString);
+
+    element.target = "_blank";
+
+    element.download = "tarefas.csv";
+
+    element.click();
+
 }
 
 
@@ -295,6 +319,11 @@ const updateTarefaLocalStorage = (oldtituloTarefa, newTituloTarefa) => {
 
     localStorage.setItem("tarefas", JSON.stringify(tarefas));
 }
+
+//Exportando Tarefas em csv
+btnExportCsv.addEventListener("click", () => {
+    exportTarefa();
+})
 
 printTarefas();
 
